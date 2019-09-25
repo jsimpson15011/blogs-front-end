@@ -4,10 +4,18 @@ import loginService from './services/login'
 import blogsService from './services/blogs'
 
 const App = () => {
-  const [blogs, setBlogs] = useState('')
+  const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogUser')
+    if (loggedUserJSON){
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+    }
+  }, [])
 
   useEffect(() => {
     blogsService.getAll()
@@ -16,6 +24,8 @@ const App = () => {
       })
   }, [])
 
+
+
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
@@ -23,21 +33,31 @@ const App = () => {
       const credentials = {username, password}
       const user = await loginService.login(credentials)
 
+      window.localStorage.setItem(
+        'loggedBlogUser', JSON.stringify(user)
+      )
       setUser(user)
       setUsername('')
       setPassword('')
       console.log(user)
     } catch (e) {
       console.log(e)
+      setUsername('')
+      setPassword('')
     }
+  }
+  const handleLogout = () => {
+    window.localStorage.removeItem('loggedBlogUser')
+    setUser(null)
   }
 
   const blogsList = () => {
     return (
       <div>
         <h2>Blogs</h2>
-        <p>{`${user.name} logged in`}</p>
+        <p>{`${user.name} logged in`}<button onClick={handleLogout}>Log out</button></p>
         {blogs.map(blog => <Blog blog={blog}/>)}
+
       </div>
     )
   }
@@ -45,6 +65,7 @@ const App = () => {
   const loginForm = () => {
     return (
       <form onSubmit={handleLogin}>
+        <h2>log into application</h2>
         <div>
           username
           <input
