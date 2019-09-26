@@ -1,10 +1,12 @@
 import React, {useState, useEffect} from 'react'
 import Blog from './components/Blog'
+import Message from './components/Message'
 import loginService from './services/login'
 import blogsService from './services/blogs'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
+  const [message, setMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -28,6 +30,15 @@ const App = () => {
       })
   }, [])
 
+  const createMessage = (message, type) =>{
+    setMessage({
+      message: message,
+      type: type
+    })
+    setTimeout(() => {
+      setMessage(null)
+    }, 5000)
+  }
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -43,7 +54,7 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (e) {
-      console.log(e)
+      createMessage(e.response.data.error, 'error')
       setUsername('')
       setPassword('')
     }
@@ -54,7 +65,7 @@ const App = () => {
     setUser(null)
   }
 
-  const handleBlogCreation = (event) => {
+  const handleBlogCreation = async(event) => {
     event.preventDefault()
 
     const newBlog = {
@@ -64,12 +75,15 @@ const App = () => {
       user: user.id
     }
 
-    blogsService.create(newBlog).then(() => {
-      blogsService.getAll()
-        .then(newBlogs => {
-          setBlogs(newBlogs)
-        })
-    })
+    try{
+      await blogsService.create(newBlog)
+      const newBlogs = await blogsService.getAll()
+      setBlogs(newBlogs)
+      createMessage(`a new blog ${newBlog.title} by ${newBlog.author} added`)
+    } catch (e) {
+      createMessage(e.response.data.error, 'error')
+    }
+
     setBlogTitle('')
     setBlogAuthor('')
     setBlogUrl('')
@@ -154,6 +168,7 @@ const App = () => {
   if (user === null) {
     return (
       <div className="App">
+        <Message message = {message}/>
         <h2>Log into application</h2>
         {loginForm()}
       </div>
@@ -162,6 +177,7 @@ const App = () => {
 
   return (
     <div className="App">
+      <Message message = {message}/>
       <h2>blogs</h2>
       {createBlogForm()}
       {blogsList()}
