@@ -3,6 +3,9 @@ import Blog from './components/Blog'
 import Message from './components/Message'
 import loginService from './services/login'
 import blogsService from './services/blogs'
+import Togglable from "./components/Togglable"
+import LoginForm from "./components/LoginForm"
+import NewBlogForm from "./components/NewBlogForm"
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -101,76 +104,20 @@ const App = () => {
     )
   }
 
-  const loginForm = () => {
-    return (
-      <form onSubmit={handleLogin}>
-        <h2>log into application</h2>
-        <div>
-          username
-          <input
-            type="text"
-            name="username"
-            value={username}
-            onChange={({target}) => setUsername(target.value)}
-          />
-        </div>
-        <div>
-          password
-          <input
-            type="password"
-            name="password"
-            value={password}
-            onChange={({target}) => setPassword(target.value)}
-          />
-        </div>
-        <button type="submit">login</button>
-      </form>
-    )
-  }
-
-  const createBlogForm = () => {
-    return (
-      <div>
-        <h2>create new</h2>
-        <form onSubmit={handleBlogCreation}>
-          <div>
-            title:
-            <input
-              type="text"
-              name="title"
-              value={blogTitle}
-              onChange={({target}) => setBlogTitle(target.value)}
-            />
-          </div>
-          <div>
-            author:
-            <input
-              type="text"
-              name="author"
-              value={blogAuthor}
-              onChange={({target}) => setBlogAuthor(target.value)}
-            />
-          </div>
-          <div>
-            url:
-            <input
-              type="text"
-              name="url"
-              value={blogUrl}
-              onChange={({target}) => setBlogUrl(target.value)}
-            />
-          </div>
-          <button type="submit">create</button>
-        </form>
-      </div>
-    )
-  }
   if (user === null) {
     return (
       <div className="App">
         <Message message = {message}/>
         <h2>Log into application</h2>
-        {loginForm()}
+        <Togglable buttonLabel = 'login'>
+          <LoginForm
+            handleLogin = {handleLogin}
+            username = {username}
+            password = {password}
+            handleUsernameChange = {({target}) => setUsername(target.value)}
+            handlePasswordChange = {({target}) => setPassword(target.value)}
+          />
+        </Togglable>
       </div>
     )
   }
@@ -179,7 +126,17 @@ const App = () => {
     <div className="App">
       <Message message = {message}/>
       <h2>blogs</h2>
-      {createBlogForm()}
+      <Togglable buttonLabel="new blog">
+        <NewBlogForm
+          handleBlogCreation = {handleBlogCreation}
+          handleTitleChange = {({target}) => setBlogTitle(target.value)}
+          handleAuthorChange = {({target}) => setBlogAuthor(target.value)}
+          handleUrlChange = {({target}) => setBlogUrl(target.value)}
+          blogTitle = {blogTitle}
+          blogAuthor = {blogAuthor}
+          blogUrl = {blogUrl}
+        />
+      </Togglable>
       {blogsList()}
     </div>
   )
