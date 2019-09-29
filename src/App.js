@@ -43,6 +43,8 @@ const App = () => {
     }, 5000)
   }
 
+  const blogFormRef = React.createRef()
+
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
@@ -70,7 +72,7 @@ const App = () => {
 
   const handleBlogCreation = async(event) => {
     event.preventDefault()
-
+    blogFormRef.current.toggleVisibility()
     const newBlog = {
       title: blogTitle,
       author: blogAuthor,
@@ -82,9 +84,15 @@ const App = () => {
       await blogsService.create(newBlog)
       const newBlogs = await blogsService.getAll()
       setBlogs(newBlogs)
+
       createMessage(`a new blog ${newBlog.title} by ${newBlog.author} added`)
     } catch (e) {
-      createMessage(e.response.data.error, 'error')
+      if (e.response.data.error){
+        createMessage(e.response.data.error, 'error')
+      } else {
+        console.log(e)
+        createMessage('something went wrong please try again', 'error')
+      }
     }
 
     setBlogTitle('')
@@ -92,14 +100,46 @@ const App = () => {
     setBlogUrl('')
   }
 
+  const handleLike = async (blog) => {
+    try {
+      await blogsService.addLike(blog)
+      const newBlogs = await blogsService.getAll()
+      setBlogs(newBlogs)
+    } catch (e) {
+      createMessage(e.response.data.error, 'error')
+    }
+  }
+
+  const handleDelete = async (blog) => {
+    try {
+      if (window.confirm(`are you sure you want to delete the blog ${blog.title}`)) {
+        await blogsService.deleteBlog(blog)
+        const newBlogs = await blogsService.getAll()
+        setBlogs(newBlogs)
+      }
+    } catch (e) {
+      createMessage(e.response.data.error, 'error')
+    }
+  }
+
   const blogsList = () => {
+    const blogsSortedByLikes = blogs.sort((a, b) => {
+      return b.likes - a.likes
+    })
     return (
       <div>
         <h2>Blogs</h2>
         <p>{`${user.name} logged in`}
           <button onClick={handleLogout}>Log out</button>
         </p>
-        {blogs.map(blog => <Blog key={blog.id} blog={blog}/>)}
+        {blogsSortedByLikes.map(blog => <Blog
+          key = {blog.id}
+          blog = {blog}
+          user = {user}
+          handleLike = {handleLike}
+          handleDelete = {handleDelete}
+        />
+        )}
       </div>
     )
   }
@@ -126,7 +166,7 @@ const App = () => {
     <div className="App">
       <Message message = {message}/>
       <h2>blogs</h2>
-      <Togglable buttonLabel="new blog">
+      <Togglable buttonLabel="new blog" ref={blogFormRef}>
         <NewBlogForm
           handleBlogCreation = {handleBlogCreation}
           handleTitleChange = {({target}) => setBlogTitle(target.value)}
