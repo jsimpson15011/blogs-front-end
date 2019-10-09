@@ -1,11 +1,11 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import Message from './components/Message'
 import loginService from './services/login'
 import blogsService from './services/blogs'
-import Togglable from "./components/Togglable"
-import LoginForm from "./components/LoginForm"
-import NewBlogForm from "./components/NewBlogForm"
+import Togglable from './components/Togglable'
+import LoginForm from './components/LoginForm'
+import NewBlogForm from './components/NewBlogForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -25,7 +25,6 @@ const App = () => {
       blogsService.setToken(user.token)
     }
   }, [])
-
   useEffect(() => {
     blogsService.getAll()
       .then(initialBlogs => {
@@ -33,7 +32,7 @@ const App = () => {
       })
   }, [])
 
-  const createMessage = (message, type) =>{
+  const createMessage = (message, type) => {
     setMessage({
       message: message,
       type: type
@@ -48,7 +47,7 @@ const App = () => {
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
-      const credentials = {username, password}
+      const credentials = { username, password }
       const user = await loginService.login(credentials)
 
       window.localStorage.setItem(
@@ -154,8 +153,8 @@ const App = () => {
             handleLogin = {handleLogin}
             username = {username}
             password = {password}
-            handleUsernameChange = {({target}) => setUsername(target.value)}
-            handlePasswordChange = {({target}) => setPassword(target.value)}
+            handleUsernameChange = {({ target }) => setUsername(target.value)}
+            handlePasswordChange = {({ target }) => setPassword(target.value)}
           />
         </Togglable>
       </div>
@@ -169,9 +168,9 @@ const App = () => {
       <Togglable buttonLabel="new blog" ref={blogFormRef}>
         <NewBlogForm
           handleBlogCreation = {handleBlogCreation}
-          handleTitleChange = {({target}) => setBlogTitle(target.value)}
-          handleAuthorChange = {({target}) => setBlogAuthor(target.value)}
-          handleUrlChange = {({target}) => setBlogUrl(target.value)}
+          handleTitleChange = {({ target }) => setBlogTitle(target.value)}
+          handleAuthorChange = {({ target }) => setBlogAuthor(target.value)}
+          handleUrlChange = {({ target }) => setBlogUrl(target.value)}
           blogTitle = {blogTitle}
           blogAuthor = {blogAuthor}
           blogUrl = {blogUrl}

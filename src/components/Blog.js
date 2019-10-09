@@ -1,8 +1,8 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 
-const Blog = ({blog, user, handleLike, handleDelete}) => {
+const Blog = ({ blog, user, handleLike, handleDelete }) => {
   const [visible, setVisibility] = useState(false)
-  const showWhenVisible = {display: visible ? '' : 'none'}
+  const showWhenVisible = { display: visible ? '' : 'none' }
 
   return (
     <div style={{
@@ -23,9 +23,9 @@ const Blog = ({blog, user, handleLike, handleDelete}) => {
         <p>{`added by ${blog.user.name}`}</p>
         <button
           onClick={() => handleDelete(blog)}
-          style={{display: blog.user.username === user.username ?
-              '' :
-              'none'
+          style={{ display: blog.user.username === user.username ?
+            '' :
+            'none'
           }}
         >remove</button>
       </div>
