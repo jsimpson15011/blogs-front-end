@@ -12,10 +12,10 @@ const Blog = ({ blog, user, handleLike, handleDelete }) => {
       padding: '5px'
     }}
     >
-      <div onClick={() => setVisibility(!visible)}>
+      <div className="name-and-author" onClick={() => setVisibility(!visible)}>
         {blog.title} {blog.author}
       </div>
-      <div style={showWhenVisible}>
+      <div className="blog-details" style={showWhenVisible}>
         <a href={blog.url}>{blog.url}</a>
         <p>{`${blog.likes} likes`}
           <button onClick={() => handleLike(blog)}>like</button>
