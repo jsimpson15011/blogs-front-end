@@ -126,7 +126,7 @@ const App = () => {
       return b.likes - a.likes
     })
     return (
-      <div>
+      <div className="blog-list">
         <h2>Blogs</h2>
         <p>{`${user.name} logged in`}
           <button onClick={handleLogout}>Log out</button>

@@ -1,6 +1,5 @@
 import React from 'react'
 import Blog from './Blog'
-import '@testing-library/jest-dom/extend-expect'
 import { render, fireEvent } from '@testing-library/react'
 
 describe('<Blog />', () => {
