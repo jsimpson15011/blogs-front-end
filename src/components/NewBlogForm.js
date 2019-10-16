@@ -2,43 +2,34 @@ import React from 'react'
 
 const NewBlogForm = ({
   handleBlogCreation,
-  handleTitleChange,
   blogTitle,
-  handleAuthorChange,
   blogAuthor,
-  handleUrlChange,
   blogUrl
 }) => {
+  const blogTitleProps = Object.assign({}, blogTitle)
+  delete blogTitleProps.reset
+
+  const blogAuthorProps = Object.assign({}, blogAuthor)
+  delete blogAuthorProps.reset
+
+  const blogUrlProps = Object.assign({}, blogUrl)
+  delete blogUrlProps.reset
+
   return (
     <div>
       <h2>create new</h2>
       <form onSubmit={handleBlogCreation}>
         <div>
           title:
-          <input
-            type="text"
-            name="title"
-            value={blogTitle}
-            onChange={handleTitleChange}
-          />
+          <input {...blogTitleProps}/>
         </div>
         <div>
           author:
-          <input
-            type="text"
-            name="author"
-            value={blogAuthor}
-            onChange={handleAuthorChange}
-          />
+          <input {...blogAuthorProps}/>
         </div>
         <div>
           url:
-          <input
-            type="text"
-            name="url"
-            value={blogUrl}
-            onChange={handleUrlChange}
-          />
+          <input {...blogUrlProps}/>
         </div>
         <button type="submit">create</button>
       </form>

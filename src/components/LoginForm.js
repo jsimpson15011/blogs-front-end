@@ -1,35 +1,22 @@
 import React from 'react'
 
-const LoginForm = (
-  {
-    handleLogin,
-    username,
-    password,
-    handleUsernameChange,
-    handlePasswordChange
-  }
-) => {
+const LoginForm = ({handleLogin, username, password}) => {
+  const usernameProps = Object.assign({}, username)
+  delete usernameProps.reset
+
+  const passwordProps = Object.assign({}, password)
+  delete passwordProps.reset
 
   return (
     <form onSubmit={handleLogin}>
       <h2>log into application</h2>
       <div>
         username
-        <input
-          type="text"
-          name="username"
-          value={username}
-          onChange={handleUsernameChange}
-        />
+        <input {...usernameProps}/>
       </div>
       <div>
         password
-        <input
-          type="password"
-          name="password"
-          value={password}
-          onChange={handlePasswordChange}
-        />
+        <input {...passwordProps}/>
       </div>
       <button type="submit">login</button>
     </form>

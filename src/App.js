@@ -6,16 +6,17 @@ import blogsService from './services/blogs'
 import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 import NewBlogForm from './components/NewBlogForm'
+import { useField } from "./hooks"
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [message, setMessage] = useState(null)
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [blogTitle, setBlogTitle] = useState('')
-  const [blogAuthor, setBlogAuthor] = useState('')
-  const [blogUrl, setBlogUrl] = useState('')
+  const blogTitle = useField('text')
+  const blogAuthor = useField('text')
+  const blogUrl = useField('text')
+  const username = useField('text')
+  const password = useField('password')
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogUser')
@@ -47,7 +48,11 @@ const App = () => {
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
-      const credentials = { username, password }
+      const usernameValue = username.value
+      const passwordValue = password.value
+
+      const credentials = { 'username': usernameValue, 'password' : passwordValue }
+
       const user = await loginService.login(credentials)
 
       window.localStorage.setItem(
@@ -55,13 +60,11 @@ const App = () => {
       )
       setUser(user)
       blogsService.setToken(user.token)
-      setUsername('')
-      setPassword('')
     } catch (e) {
       createMessage(e.response.data.error, 'error')
-      setUsername('')
-      setPassword('')
     }
+    username.reset()
+    password.reset()
   }
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogUser')
@@ -73,9 +76,9 @@ const App = () => {
     event.preventDefault()
     blogFormRef.current.toggleVisibility()
     const newBlog = {
-      title: blogTitle,
-      author: blogAuthor,
-      url: blogUrl,
+      title: blogTitle.value,
+      author: blogAuthor.value,
+      url: blogUrl.value,
       user: user.id
     }
 
@@ -94,9 +97,9 @@ const App = () => {
       }
     }
 
-    setBlogTitle('')
-    setBlogAuthor('')
-    setBlogUrl('')
+    blogTitle.reset()
+    blogAuthor.reset()
+    blogUrl.reset()
   }
 
   const handleLike = async (blog) => {
@@ -153,8 +156,6 @@ const App = () => {
             handleLogin = {handleLogin}
             username = {username}
             password = {password}
-            handleUsernameChange = {({ target }) => setUsername(target.value)}
-            handlePasswordChange = {({ target }) => setPassword(target.value)}
           />
         </Togglable>
       </div>
@@ -168,9 +169,6 @@ const App = () => {
       <Togglable buttonLabel="new blog" ref={blogFormRef}>
         <NewBlogForm
           handleBlogCreation = {handleBlogCreation}
-          handleTitleChange = {({ target }) => setBlogTitle(target.value)}
-          handleAuthorChange = {({ target }) => setBlogAuthor(target.value)}
-          handleUrlChange = {({ target }) => setBlogUrl(target.value)}
           blogTitle = {blogTitle}
           blogAuthor = {blogAuthor}
           blogUrl = {blogUrl}
