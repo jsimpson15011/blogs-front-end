@@ -6,10 +6,10 @@ import blogsService from './services/blogs'
 import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 import NewBlogForm from './components/NewBlogForm'
-import { useField } from "./hooks"
+import { useField,useResource } from "./hooks"
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
+  //const [blogs, setBlogs] = useState([])
   const [message, setMessage] = useState(null)
   const [user, setUser] = useState(null)
   const blogTitle = useField('text')
@@ -17,20 +17,19 @@ const App = () => {
   const blogUrl = useField('text')
   const username = useField('text')
   const password = useField('password')
+  const [blogs, blogServiceHook] = useResource('http://localhost:3003/api/blogs')
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
+      blogServiceHook.setToken(user.token)
       blogsService.setToken(user.token)
     }
   }, [])
   useEffect(() => {
-    blogsService.getAll()
-      .then(initialBlogs => {
-        setBlogs(initialBlogs)
-      })
+    blogServiceHook.getAll()
   }, [])
 
   const createMessage = (message, type) => {
@@ -59,7 +58,7 @@ const App = () => {
         'loggedBlogUser', JSON.stringify(user)
       )
       setUser(user)
-      blogsService.setToken(user.token)
+      blogServiceHook.setToken(user.token)
     } catch (e) {
       createMessage(e.response.data.error, 'error')
     }
@@ -68,7 +67,7 @@ const App = () => {
   }
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogUser')
-    blogsService.setToken(null)
+    blogServiceHook.setToken(null)
     setUser(null)
   }
 
@@ -83,9 +82,8 @@ const App = () => {
     }
 
     try{
-      await blogsService.create(newBlog)
-      const newBlogs = await blogsService.getAll()
-      setBlogs(newBlogs)
+      await blogServiceHook.create(newBlog)
+      blogServiceHook.getAll()
 
       createMessage(`a new blog ${newBlog.title} by ${newBlog.author} added`)
     } catch (e) {
@@ -105,8 +103,7 @@ const App = () => {
   const handleLike = async (blog) => {
     try {
       await blogsService.addLike(blog)
-      const newBlogs = await blogsService.getAll()
-      setBlogs(newBlogs)
+      blogServiceHook.getAll()
     } catch (e) {
       createMessage(e.response.data.error, 'error')
     }
@@ -116,8 +113,7 @@ const App = () => {
     try {
       if (window.confirm(`are you sure you want to delete the blog ${blog.title}`)) {
         await blogsService.deleteBlog(blog)
-        const newBlogs = await blogsService.getAll()
-        setBlogs(newBlogs)
+        blogServiceHook.getAll()
       }
     } catch (e) {
       createMessage(e.response.data.error, 'error')
